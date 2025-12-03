@@ -1,6 +1,8 @@
 #include "Quad.h"
 #include <typeinfo>
 
+using namespace compiler;
+
 
 // flag的不同值如下:
 /* 
@@ -120,13 +122,21 @@ Quad::Quad(OpCode op, symbol *arg1, int arg2, symbol *result)
     this->flag = 5;
 }
 Quad::Quad(OpCode op, int arg1, int arg2, symbol *result)
-// 字面量跟字面量运算：2*2
 {
     this->op = op;
     this->arg1.target = arg1;
     this->arg2.target = arg2;
     this->result.var = result;
-    this->flag = 4;
+    this->flag = 5;
+}
+
+Quad::Quad(OpCode op, int arg1, symbol *arg2, int result)
+{
+    this->op = op;
+    this->arg1.target = arg1;
+    this->arg2.var = arg2;
+    this->result.target = result;
+    this->flag = 13;
 }
 
 Quad::Quad(OpCode op, symbol *arg1, symbol *arg2, int result)
@@ -161,64 +171,64 @@ std::string Quad::printOp()
 {
     switch (this->op)
     {
-    case OpCode::JUMP:
-        return "     JUMP     ";
-    case OpCode::JUMP_SMALL:
-        return "  JUMP_SMALL  ";
-    case OpCode::JUMP_EQ_SMALL:
-        return "JUMP_EQ_SMALL ";
-    case OpCode::JUMP_GREAT:
-        return "  JUMP_GREAT  ";
-    case OpCode::JUMP_EQ_GREAT:
-        return "JUMP_EQ_GREAT ";
-    case OpCode::JUMP_EQUAL:
-        return "  JUMO_EQUAL  ";
-    case OpCode::JUMP_NOT_EQUAL:
+    case OpCode::OP_JUMP:
+        return "JUMP";
+    case OpCode::OP_JUMP_SMALL:
+        return "JUMP_SMALL";
+    case OpCode::OP_JUMP_EQ_SMALL:
+        return "JUMP_EQ_SMALL";
+    case OpCode::OP_JUMP_GREAT:
+        return "JUMP_GREAT";
+    case OpCode::OP_JUMP_EQ_GREAT:
+        return "JUMP_EQ_GREAT";
+    case OpCode::OP_JUMP_EQUAL:
+        return "JUMP_EQUAL";
+    case OpCode::OP_JUMP_NOT_EQUAL:
         return "JUMP_NOT_EQUAL";
-    case OpCode::PLUS:
-        return "     PLUS     ";
-    case OpCode::MINUS:
-        return "    MINUS     ";
-    case OpCode::TIMES:
-        return "    TIMES     ";
-    case OpCode::DIV:
-        return "     DIV      ";
-    case OpCode::MOD:
-        return "     MOD      ";
-    case OpCode::POWER:
-        return "    POWER     ";
-    case OpCode::NEGATIVE:
-        return "   NEGATIVE   ";
-    case OpCode::ASSIGN:
-        return "    ASSIGN    ";
-    case OpCode::ASSIGN_ARRAY:
-        return " ASSIGN_ARRAY ";
-    case OpCode::ASSIGN_STRUCT:
-        return "ASSIGN_STRUCT ";
-    case OpCode::GET_ADDRESS:
-        return " GET_ADDRESS  ";
-    case OpCode::ASSIGN_POINTER:
+    case OpCode::OP_PLUS:
+        return "PLUS";
+    case OpCode::OP_MINUS:
+        return "MINUS";
+    case OpCode::OP_TIMES:
+        return "TIMES";
+    case OpCode::OP_DIV:
+        return "DIV";
+    case OpCode::OP_MOD:
+        return "MOD";
+    case OpCode::OP_POWER:
+        return "POWER";
+    case OpCode::OP_NEGATIVE:
+        return "NEGATIVE";
+    case OpCode::OP_ASSIGN:
+        return "ASSIGN";
+    case OpCode::OP_ASSIGN_ARRAY:
+        return "ASSIGN_ARRAY";
+    case OpCode::OP_ASSIGN_STRUCT:
+        return "ASSIGN_STRUCT";
+    case OpCode::OP_ASSIGN_POINTER:
         return "ASSIGN_POINTER";
-    case OpCode::PARAM:
-        return "    PARAM     ";
-    case OpCode::CALL:
-        return "     CALL     ";
-    case OpCode::RETURN:
-        return "    RETURN    ";
-    case OpCode::FUNC_DEF:
-        return "   FUNC_DEF   ";
-    case OpCode::END_FUNCTION:
-        return " END_FUNCTION ";
-    case OpCode::LABEL:
-        return "     LABEL    ";
-    case OpCode::GET_VALUE:
-        return "  GET_VALUE   ";
-    case OpCode::GET_ARRAY:
-        return "  GET_ARRAY   ";
-    case OpCode::GET_STRUCT:
-        return "  GET_STRUCT  ";
+    case OpCode::OP_GET_ADDRESS:
+        return "GET_ADDRESS";
+    case OpCode::OP_PARAM:
+        return "PARAM";
+    case OpCode::OP_CALL:
+        return "CALL";
+    case OpCode::OP_RETURN:
+        return "RETURN";
+    case OpCode::OP_FUNC_DEF:
+        return "FUNC_DEF";
+    case OpCode::OP_END_FUNCTION:
+        return "END_FUNCTION";
+    case OpCode::OP_LABEL:
+        return "LABEL";
+    case OpCode::OP_GET_VALUE:
+        return "GET_VALUE";
+    case OpCode::OP_GET_ARRAY:
+        return "GET_ARRAY";
+    case OpCode::OP_GET_STRUCT:
+        return "GET_STRUCT";
     default:
-        break;
+        return "unknown";
     }
 }
 void Quad::printQuad()

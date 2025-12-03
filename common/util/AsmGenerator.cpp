@@ -260,7 +260,7 @@ void AsmGenerator::generateArithmetic(Quad& q) {
     OpCode opcode = q.getOpCode();// 拿到四元式的code
     int flag = q.getFlag(); //　这个flag表示了不同的情况
     // Special case, assign operate is unary operator. 单元运算符
-    if (opcode == OpCode::ASSIGN) {
+    if (opcode == OpCode::OP_ASSIGN) {
         symbol* result = q.getArg(3).var;
         int offset = result->getOffset();
         std::string result_ebp_offset = this->asmcode.generateVar(offset);
@@ -288,8 +288,8 @@ void AsmGenerator::generateArithmetic(Quad& q) {
         return;
     }
     // 加
-    if (opcode == OpCode::PLUS) instructor = ASM_ADD;
-    else if (opcode == OpCode::MINUS) instructor = ASM_SUB; // 减
+    if (opcode == OpCode::OP_PLUS) instructor = ASM_ADD;
+    else if (opcode == OpCode::OP_MINUS) instructor = ASM_SUB; // 减
 
     // 未设置
     asmRegister tempVar1Reg = asmRegister::unset;
@@ -319,22 +319,22 @@ void AsmGenerator::generateArithmetic(Quad& q) {
             resultReg = this->getRegister(resultIdName);
         }
         if (tempVar1Reg != asmRegister::unset && tempVar2Reg != asmRegister::unset) {
-            if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+            if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                 this->asmcode.generateBinaryInstructor(instructor, tempVar1Reg, tempVar2Reg);
             } else {
-                if (opcode == OpCode::TIMES) {
+                if (opcode == OpCode::OP_TIMES) {
                     this->asmcode.mul(tempVar1Reg, tempVar2Reg);
-                } else if (opcode == OpCode::DIV || opcode == OpCode::MOD) {
+                } else if (opcode == OpCode::OP_DIV || opcode == OpCode::OP_MOD) {
                     this->asmcode.div(tempVar1Reg, tempVar2Reg);
                 }
             }
             if (resultReg != asmRegister::unset) {
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     if (tempVar1Reg != resultReg) {
                         this->asmcode.mov(resultReg, tempVar1Reg);
                     }
                 } else {
-                    if (opcode == OpCode::TIMES || opcode == OpCode::DIV) {
+                    if (opcode == OpCode::OP_TIMES || opcode == OpCode::OP_DIV) {
                         this->asmcode.mov(resultReg, asmRegister::eax);
                     } else {
                         this->asmcode.mov(resultReg, asmRegister::edx);
@@ -345,12 +345,12 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                 symbol* result = q.getArg(3).var;
                 int offset = result->getOffset();
                 std::string ebp_offset = this->asmcode.generateVar(offset);
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     if (tempVar1Reg != resultReg) {
                         this->asmcode.mov(ebp_offset, tempVar1Reg);
                     }
                 } else {
-                    if (opcode == OpCode::TIMES || opcode == OpCode::DIV) {
+                    if (opcode == OpCode::OP_TIMES || opcode == OpCode::OP_DIV) {
                         this->asmcode.mov(ebp_offset, asmRegister::eax);
                     } else {
                         this->asmcode.mov(ebp_offset, asmRegister::edx);
@@ -367,12 +367,12 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                 symbol* vars = q.getArg(1).var;
                 int offset = vars->getOffset();
                 var = this->asmcode.generateVar(offset);
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     this->asmcode.generateBinaryInstructor(instructor, var, reg);
                     this->asmcode.mov(reg, var);
                 } else {
-                    if (opcode == OpCode::TIMES || opcode == OpCode::DIV) {
-                        if (opcode == OpCode::TIMES) {
+                    if (opcode == OpCode::OP_TIMES || opcode == OpCode::OP_DIV) {
+                        if (opcode == OpCode::OP_TIMES) {
                             this->asmcode.mul(reg, var);
                         } else {
                             this->asmcode.div(var, reg);
@@ -389,11 +389,11 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                 symbol* vars = q.getArg(2).var;
                 int offset = vars->getOffset();
                 var = this->asmcode.generateVar(offset);
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     this->asmcode.generateBinaryInstructor(instructor, reg, var);
                 } else {
-                    if (opcode == OpCode::TIMES || opcode == OpCode::DIV) {
-                         if (opcode == OpCode::TIMES) {
+                    if (opcode == OpCode::OP_TIMES || opcode == OpCode::OP_DIV) {
+                         if (opcode == OpCode::OP_TIMES) {
                             this->asmcode.mul(reg, var);
                         } else {
                             this->asmcode.div(reg, var);
@@ -429,16 +429,16 @@ void AsmGenerator::generateArithmetic(Quad& q) {
             std::string var1_ebp_offset = this->asmcode.generateVar(var1->getOffset()); // 拿到偏移量
             std::string var2_ebp_offset = this->asmcode.generateVar(var2->getOffset()); // 拿到偏移量
             if (resultReg != asmRegister::unset) {
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     this->asmcode.mov(resultReg, var1_ebp_offset);
                     this->asmcode.generateBinaryInstructor(instructor, resultReg, var2_ebp_offset);
                 } else {
-                    if (opcode == OpCode::TIMES) {
+                    if (opcode == OpCode::OP_TIMES) {
                         this->asmcode.mul(var1_ebp_offset, var2_ebp_offset);
                     } else {
                         this->asmcode.div(var1_ebp_offset, var2_ebp_offset);
                     }
-                    if (opcode == OpCode::MOD) {
+                    if (opcode == OpCode::OP_MOD) {
                         this->asmcode.mov(resultReg, asmRegister::edx);
                     } else {
                         this->asmcode.mov(resultReg, asmRegister::eax);
@@ -456,9 +456,9 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                 tempVar2Reg = this->findRegister(arg2IdName);
                 this->releaseRegister(tempVar2Reg);
                 resultReg = this->getRegister(resultIdName);
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     this->asmcode.generateBinaryInstructor(instructor, tempVar2Reg, instance);
-                    if (opcode == OpCode::MINUS) {
+                    if (opcode == OpCode::OP_MINUS) {
                         this->asmcode.generateUnaryInstructor(ASM_NEG, tempVar2Reg);
                     }
                     if (resultReg != tempVar2Reg) {
@@ -468,12 +468,12 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                     this->asmcode.asmXor(asmRegister::edx, asmRegister::edx);
                     asmRegister regInstance = asmRegister::eax;
                     this->asmcode.mov(regInstance, instance);
-                    if (opcode == OpCode::TIMES) {
+                    if (opcode == OpCode::OP_TIMES) {
                         this->asmcode.generateUnaryInstructor(ASM_MUL, tempVar2Reg);
                         this->asmcode.mov(resultReg, asmRegister::eax);
                     } else {
                         this->asmcode.generateUnaryInstructor(ASM_DIV, tempVar2Reg);
-                        if (opcode == OpCode::DIV) {
+                        if (opcode == OpCode::OP_DIV) {
                             this->asmcode.mov(resultReg, asmRegister::eax);
                         } else {
                             this->asmcode.mov(resultReg, asmRegister::edx);
@@ -484,19 +484,19 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                 resultReg = this->getRegister(resultIdName);
                 int offset = q.getArg(2).var->getOffset();
                 std::string ebpOffset = DOUBLE_WORD + this->asmcode.generateVar(offset);
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     this->asmcode.asmXor(resultReg, resultReg);
                     this->asmcode.mov(resultReg, instance);
                     this->asmcode.generateBinaryInstructor(instructor, resultReg, ebpOffset);
                 } else {
                     this->asmcode.asmXor(asmRegister::edx, asmRegister::edx);
                     this->asmcode.mov(asmRegister::eax, instance);
-                    if (opcode == OpCode::TIMES) {
+                    if (opcode == OpCode::OP_TIMES) {
                         this->asmcode.generateUnaryInstructor(ASM_MUL, ebpOffset);
                         this->asmcode.mov(resultReg, asmRegister::eax);
                     } else {
                         this->asmcode.generateUnaryInstructor(ASM_DIV, ebpOffset);
-                        if (opcode == OpCode::DIV) {
+                        if (opcode == OpCode::OP_DIV) {
                             this->asmcode.mov(resultReg, asmRegister::eax);
                         } else {
                             this->asmcode.mov(resultReg, asmRegister::edx);
@@ -512,7 +512,7 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                 tempVar1Reg = this->findRegister(arg1IdName);
                 this->releaseRegister(tempVar1Reg);
                 resultReg = this->getRegister(resultIdName);
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     this->asmcode.generateBinaryInstructor(instructor, tempVar1Reg, instance);
                     if (resultReg != tempVar1Reg) {
                         this->asmcode.mov(resultReg, tempVar2Reg);
@@ -527,12 +527,12 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                     std::string ebpOffset = this->asmcode.generateVar(offset);
                     this->asmcode.mov(asmRegister::eax, ebpOffset);
 
-                    if (opcode == OpCode::TIMES) {
+                    if (opcode == OpCode::OP_TIMES) {
                         this->asmcode.generateUnaryInstructor(ASM_MUL, regInstance);
                         this->asmcode.mov(resultReg, asmRegister::eax);
                     } else {
                         this->asmcode.generateUnaryInstructor(ASM_DIV, regInstance);
-                        if (opcode == OpCode::DIV) {
+                        if (opcode == OpCode::OP_DIV) {
                             this->asmcode.mov(resultReg, asmRegister::eax);
                         } else {
                             this->asmcode.mov(resultReg, asmRegister::edx);
@@ -543,7 +543,7 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                 resultReg = this->getRegister(resultIdName);
                 int offset = q.getArg(1).var->getOffset();
                 std::string ebpOffset = DOUBLE_WORD + this->asmcode.generateVar(offset);
-                if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+                if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
                     this->asmcode.asmXor(resultReg, resultReg);
                     this->asmcode.mov(resultReg, ebpOffset);
                     this->asmcode.generateBinaryInstructor(instructor, resultReg, instance);
@@ -552,12 +552,12 @@ void AsmGenerator::generateArithmetic(Quad& q) {
                     asmRegister instanceReg = resultReg;
                     this->asmcode.mov(asmRegister::eax, ebpOffset);
                     this->asmcode.mov(instanceReg, instance);
-                    if (opcode == OpCode::TIMES) {
+                    if (opcode == OpCode::OP_TIMES) {
                         this->asmcode.generateUnaryInstructor(ASM_MUL, instanceReg);
                         this->asmcode.mov(resultReg, asmRegister::eax);
                     } else {
                         this->asmcode.generateUnaryInstructor(ASM_DIV, instanceReg);
-                        if (opcode == OpCode::DIV) {
+                        if (opcode == OpCode::OP_DIV) {
                             this->asmcode.mov(resultReg, asmRegister::eax);
                         } else {
                             this->asmcode.mov(resultReg, asmRegister::edx);
@@ -572,19 +572,19 @@ void AsmGenerator::generateArithmetic(Quad& q) {
         std::string instance1 = this->asmcode.generateInstanceNumber(value1);
         std::string instance2 = this->asmcode.generateInstanceNumber(value2);
         resultReg = this->getRegister(resultIdName);
-        if (opcode == OpCode::PLUS || opcode == OpCode::MINUS) {
+        if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS) {
             this->asmcode.mov(resultReg, instance1);
             this->asmcode.generateBinaryInstructor(instructor, resultReg, instance2);
         } else {
             this->asmcode.asmXor(asmRegister::edx, asmRegister::edx);
             this->asmcode.mov(asmRegister::eax, instance1);
             this->asmcode.mov(resultReg, instance2);
-            if (opcode == OpCode::TIMES) {
+            if (opcode == OpCode::OP_TIMES) {
                 this->asmcode.generateUnaryInstructor(ASM_MUL, resultReg);
                 this->asmcode.mov(resultReg, asmRegister::eax);
             } else {
                 this->asmcode.generateUnaryInstructor(ASM_DIV, resultReg);
-                if (opcode == OpCode::DIV) {
+                if (opcode == OpCode::OP_DIV) {
                     this->asmcode.mov(resultReg, asmRegister::eax);
                 } else {
                     this->asmcode.mov(resultReg, asmRegister::edx);
@@ -714,7 +714,7 @@ void AsmGenerator::generateSetArg(Quad& q) {
 void AsmGenerator::generateJump(Quad& q) {
     OpCode opcode = q.getOpCode();
     std::string label = "label" + std::to_string(labelMap[q.getArg(3).target]);
-    if (opcode == OpCode::JUMP) {
+    if (opcode == OpCode::OP_JUMP) {
         this->asmcode.generateUnaryInstructor(ASM_JUMP, label);
     } else {
         int flag = q.getFlag();
@@ -773,17 +773,17 @@ void AsmGenerator::generateJump(Quad& q) {
                 this->asmcode.generateBinaryInstructor(ASM_CMP, asmRegister::edx, v2EbpOffset);
             }
         }
-        if (opcode == OpCode::JUMP_EQ_GREAT) {
+        if (opcode == OpCode::OP_JUMP_EQ_GREAT) {
             this->asmcode.generateUnaryInstructor(ASM_JGE, label);
-        } else if (opcode == OpCode::JUMP_GREAT) {
+        } else if (opcode == OpCode::OP_JUMP_GREAT) {
             this->asmcode.generateUnaryInstructor(ASM_JG, label);
-        } else if (opcode == OpCode::JUMP_EQ_SMALL) {
+        } else if (opcode == OpCode::OP_JUMP_EQ_SMALL) {
             this->asmcode.generateUnaryInstructor(ASM_JLE, label);
-        } else if (opcode == OpCode::JUMP_SMALL) {
+        } else if (opcode == OpCode::OP_JUMP_SMALL) {
             this->asmcode.generateUnaryInstructor(ASM_JL, label);
-        } else if (opcode == OpCode::JUMP_EQUAL) {
+        } else if (opcode == OpCode::OP_JUMP_EQUAL) {
             this->asmcode.generateUnaryInstructor(ASM_JE, label);
-        } else if (opcode == OpCode::JUMP_NOT_EQUAL) {
+        } else if (opcode == OpCode::OP_JUMP_NOT_EQUAL) {
             this->asmcode.generateUnaryInstructor(ASM_JNE, label);
         }
     }
@@ -948,7 +948,7 @@ void AsmGenerator::generateGetArrayValue(Quad& q) {
     asmRegister reg = this->getRegister(resultName);
     int baseOffset = q.getArg(1).var->getOffset();
     int totalOffset = baseOffset;
-    if (q.getOpCode() == OpCode::GET_ARRAY) {
+    if (q.getOpCode() == OpCode::OP_GET_ARRAY) {
         asmRegister offsetReg = asmRegister::unset;
         std::string offsetEbpStr = "";
         int flag = q.getFlag();
@@ -989,7 +989,7 @@ void AsmGenerator::generateAssignArray(Quad& q) {
     int totalOffset = baseOffset;
     asmRegister offsetReg = asmRegister::unset;
     std::string offsetEbpStr = "";
-    if (q.getOpCode() == OpCode::ASSIGN_ARRAY) {
+    if (q.getOpCode() == OpCode::OP_ASSIGN_ARRAY) {
         std::string offsetName = q.getArg(2).var->getIdName();
         if (offsetName[0] == 'T') {
             offsetReg = this->findRegister(offsetName);
@@ -1015,7 +1015,7 @@ void AsmGenerator::generateAssignArray(Quad& q) {
             this->releaseRegister(varReg);
             this->asmcode.mov(varReg, valueEbpOffset);
         }
-        if (q.getOpCode() == OpCode::ASSIGN_POINTER) {
+        if (q.getOpCode() == OpCode::OP_ASSIGN_POINTER) {
             this->asmcode.mov(asmRegister::edx, this->asmcode.generateVar(totalOffset));
         } else {
             this->asmcode.mov(asmRegister::edx, asmRegister::ebp);
@@ -1037,7 +1037,7 @@ void AsmGenerator::generateAssignArray(Quad& q) {
         this->asmcode.mov(this->asmcode.findValueByAddress(asmRegister::edx), varReg);
     } else {
         std::string instanceNum = this->asmcode.generateInstanceNumber(q.getArg(1).target);
-        if (q.getOpCode() == OpCode::ASSIGN_POINTER) {
+        if (q.getOpCode() == OpCode::OP_ASSIGN_POINTER) {
             this->asmcode.mov(asmRegister::edx, this->asmcode.generateVar(totalOffset));
         } else {
             this->asmcode.mov(asmRegister::edx, asmRegister::ebp);
@@ -1077,7 +1077,7 @@ void AsmGenerator::preSetLabel() {
     }
     for (size_t i = 0; i < quads.size(); i++) {
         if (labelMap.count(i) > 0) {
-            Quad q(OpCode::LABEL, labelMap[i], (symbol*)NULL, (symbol*)NULL);
+            Quad q(OpCode::OP_LABEL, labelMap[i], (symbol*)NULL, (symbol*)NULL);
             quad.push_back(q);
         }
         quad.push_back(quads[i]);
@@ -1086,9 +1086,9 @@ void AsmGenerator::preSetLabel() {
 }
 
 bool AsmGenerator::isJumpQuad(OpCode opcode) {
-    return opcode == OpCode::JUMP || opcode == OpCode::JUMP_SMALL || opcode == OpCode::JUMP_EQ_SMALL ||
-        opcode == OpCode::JUMP_GREAT || opcode == OpCode::JUMP_EQ_GREAT || opcode == OpCode::JUMP_EQUAL ||
-        opcode == OpCode::JUMP_NOT_EQUAL;
+    return opcode == OpCode::OP_JUMP || opcode == OpCode::OP_JUMP_SMALL || opcode == OpCode::OP_JUMP_EQ_SMALL ||
+        opcode == OpCode::OP_JUMP_GREAT || opcode == OpCode::OP_JUMP_EQ_GREAT || opcode == OpCode::OP_JUMP_EQUAL ||
+        opcode == OpCode::OP_JUMP_NOT_EQUAL;
 }
 
 // 最主要的，生成函数
@@ -1099,7 +1099,7 @@ void AsmGenerator::generate() {
     for (size_t i = 0; i < this->quads.size(); i++) {
         Quad& q = quads[i];
         OpCode opcode = q.getOpCode();
-        if (opcode == OpCode::FUNC_DEF) {
+        if (opcode == OpCode::OP_FUNC_DEF) {
             if (currentTable == rootTable) {
                 currentTable = currentTable->getChild();
             } else {
@@ -1107,14 +1107,14 @@ void AsmGenerator::generate() {
             }
             this->generateDefFunction(q);
         }
-        else if (opcode == OpCode::PLUS || opcode == OpCode::MINUS ||
-                 opcode == OpCode::DIV || opcode == OpCode::TIMES ||
-                 opcode == OpCode::ASSIGN || opcode == OpCode::MOD) {
+        else if (opcode == OpCode::OP_PLUS || opcode == OpCode::OP_MINUS ||
+                 opcode == OpCode::OP_DIV || opcode == OpCode::OP_TIMES ||
+                 opcode == OpCode::OP_ASSIGN || opcode == OpCode::OP_MOD) {
             this->generateArithmetic(q);
         }
-        else if (opcode == OpCode::PARAM) {
+        else if (opcode == OpCode::OP_PARAM) {
             Quad& next = quads[i + 1];
-            if (next.getOpCode() == OpCode::CALL) {
+            if (next.getOpCode() == OpCode::OP_CALL) {
                 if (next.getArg(1).var->getIdName() == "print_int_i" || 
                     next.getArg(1).var->getIdName() == "read_int_i") {
                         this->generateCallBuildInFunction(next, q);
@@ -1125,30 +1125,30 @@ void AsmGenerator::generate() {
             // Push the args to stack
             this->generateSetArg(q);
         }
-        else if (opcode == OpCode::CALL) {
+        else if (opcode == OpCode::OP_CALL) {
             this->generateCallFunction(q);
-        } else if (opcode == OpCode::END_FUNCTION) {
+        } else if (opcode == OpCode::OP_END_FUNCTION) {
             this->generateEndFunction(q);
-        } else if (opcode == OpCode::RETURN) {
+        } else if (opcode == OpCode::OP_RETURN) {
             this->generateReturn(q);
-        } else if (opcode == OpCode::LABEL) {
+        } else if (opcode == OpCode::OP_LABEL) {
             int labelIndex = q.getArg(1).target;
             this->asmcode.label("label" + std::to_string(labelIndex));
         } else if (this->isJumpQuad(opcode)) {
             this->generateJump(q);
-        } else if (opcode == OpCode::POWER) {
+        } else if (opcode == OpCode::OP_POWER) {
             this->generatePower(q);
-        } else if (opcode == OpCode::NEGATIVE) {
+        } else if (opcode == OpCode::OP_NEGATIVE) {
             this->generateNeg(q);
-        } else if (opcode == OpCode::GET_ADDRESS) {
+        } else if (opcode == OpCode::OP_GET_ADDRESS) {
             this->generateGetAddress(q);
-        } else if (opcode == OpCode::ASSIGN_STRUCT) {
+        } else if (opcode == OpCode::OP_ASSIGN_STRUCT) {
             this->generateAssignMember(q);
-        } else if (opcode == OpCode::GET_STRUCT) {
+        } else if (opcode == OpCode::OP_GET_STRUCT) {
             this->generateGetMember(q);
-        } else if (opcode == OpCode::ASSIGN_ARRAY || opcode == OpCode::ASSIGN_POINTER) {
+        } else if (opcode == OpCode::OP_ASSIGN_ARRAY || opcode == OpCode::OP_ASSIGN_POINTER) {
             this->generateAssignArray(q);
-        } else if (opcode == OpCode::GET_ARRAY || opcode == OpCode::GET_VALUE) {
+        } else if (opcode == OpCode::OP_GET_ARRAY || opcode == OpCode::OP_GET_VALUE) {
             this->generateGetArrayValue(q);
         }
     }

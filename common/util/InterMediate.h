@@ -8,6 +8,8 @@
 #include <stack>
 #include <list>
 
+using namespace compiler;
+
 // Inter mediate code generator
 class InterMediate
 {

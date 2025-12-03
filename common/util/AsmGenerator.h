@@ -9,6 +9,8 @@
 #include "../symbol/symbol.h"
 #include "./Quad.h"
 #include "../symbol/FuncSymbol.h"
+
+using namespace compiler;
 // assembly language，缩写为 asm，中文译为汇编语言
 enum class asmRegister {
     unset = -1,

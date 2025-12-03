@@ -6,6 +6,8 @@
 #include "../symbol/symbol.h"
 #include "../trees.h"
 
+namespace compiler {
+
 /***********************
  * Operation Code for a Quad:
  * @enum JUMP:  JUMP operation.
@@ -36,34 +38,34 @@
 */
 enum class OpCode
 {
-    JUMP,
-    JUMP_SMALL,
-    JUMP_EQ_SMALL,
-    JUMP_GREAT,
-    JUMP_EQ_GREAT,
-    JUMP_EQUAL,
-    JUMP_NOT_EQUAL,
-    PLUS,
-    MINUS,
-    TIMES,
-    DIV,
-    MOD,
-    POWER,
-    NEGATIVE,
-    ASSIGN,
-    ASSIGN_ARRAY,
-    ASSIGN_STRUCT,
-    ASSIGN_POINTER,
-    GET_ADDRESS,
-    PARAM,
-    CALL,
-    RETURN,
-    FUNC_DEF,
-    END_FUNCTION,
-    LABEL,
-    GET_VALUE,
-    GET_ARRAY,
-    GET_STRUCT
+    OP_JUMP,
+    OP_JUMP_SMALL,
+    OP_JUMP_EQ_SMALL,
+    OP_JUMP_GREAT,
+    OP_JUMP_EQ_GREAT,
+    OP_JUMP_EQUAL,
+    OP_JUMP_NOT_EQUAL,
+    OP_PLUS,
+    OP_MINUS,
+    OP_TIMES,
+    OP_DIV,
+    OP_MOD,
+    OP_POWER,
+    OP_NEGATIVE,
+    OP_ASSIGN,
+    OP_ASSIGN_ARRAY,
+    OP_ASSIGN_STRUCT,
+    OP_ASSIGN_POINTER,
+    OP_GET_ADDRESS,
+    OP_PARAM,
+    OP_CALL,
+    OP_RETURN,
+    OP_FUNC_DEF,
+    OP_END_FUNCTION,
+    OP_LABEL,
+    OP_GET_VALUE,
+    OP_GET_ARRAY,
+    OP_GET_STRUCT
 };
 
 union Arg {// arg是联合类型，可以代表一个符号或者一个变量
@@ -96,6 +98,7 @@ public:
     Quad(OpCode op, int arg1, symbol *arg2, symbol *result);
     Quad(OpCode op, symbol *arg1, int arg2, symbol *result);
     Quad(OpCode op, int arg1, int arg2, symbol *result);
+    Quad(OpCode op, int arg1, symbol *arg2, int result);
 
     Quad(OpCode op, symbol *arg1, symbol *arg2, int result);
     Quad(OpCode op, symbol *arg1, int arg2, int result);
@@ -118,4 +121,7 @@ public:
     }
     void printQuad();
 };
+
+} // namespace compiler
+
 #endif

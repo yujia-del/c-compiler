@@ -23,7 +23,9 @@ ifeq ($(GRAMMAREXIST),notexist)
 endif
 	$(BISON) --output="./Linux/grammar.tab.cpp" --defines="./Linux/grammar.tab.h" grammar.y
 	$(FLEX) --outfile="./Linux/lexer.flex.cpp" lexer.l
-	sed -i "1i\#include \"../common/trees.h\"" ./Linux/grammar.tab.h
+	echo '#include "../common/trees.h"' > ./Linux/grammar.tab.h.tmp
+	cat ./Linux/grammar.tab.h >> ./Linux/grammar.tab.h.tmp
+	mv ./Linux/grammar.tab.h.tmp ./Linux/grammar.tab.h
 
 %.o: %.cpp $(DEPS)
 	$(CXX) -c $< -o $@ -std=$(CXXVER) -g

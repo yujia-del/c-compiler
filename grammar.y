@@ -1,17 +1,18 @@
-/* 第一部分：说明部分 */
+/* Part 1: Declaration section */
 /*
-  YACC源程序说明部分定义语法规则中要用的终结符号，
-  语义动作中使用的数据类型、变量、语义值的联合类型以及语法规则中运算符的优先级等。说明部分可以是空的。
-  说明部分通常包含两部分内容：
+  The declaration section of YACC source program defines terminal symbols,
+  data types, variables, union types for semantic values, and precedence of operators.
+  It can be empty.
+  The declaration section usually contains two parts:
 
-  C语言代码部分
-  Yacc说明部分
+  C language code section
+  Yacc declaration section
   
-  这两部分可以拆分成下面四个小部分：
-  头文件表
-  宏定义
-  数据类型定义
-  全局变量定义
+  These two parts can be divided into four smaller parts:
+  Header file list
+  Macro definitions
+  Data type definitions
+  Global variable definitions
 */
 %{
 #include <cstdio>
@@ -40,27 +41,27 @@ void yyerror(const char *str);
 优先级和结合性定义
 */
 
-/* 语法开始符号定义
-上下文无关文法的开始符号是一个特殊的非终结符，所有的推导都从这个非终结符开始
-在yacc中，语法开始符定义语句是
-% start 非终结符……
-如果没有上面的说明，yacc自动将语法规则部分中第一条语法规则左部的非终结符作为语法开始符
+/* Grammar start symbol definition
+The start symbol of a context-free grammar is a special non-terminal symbol from which all derivations start.
+In yacc, the syntax start symbol definition statement is:
+% start non-terminal...
+If there is no such statement, yacc automatically uses the non-terminal on the left side of the first grammar rule as the start symbol.
 */
 
 /* 
-例:
- % union{
+Example:
+ %union{
 int ival
 double dval
 INTERVAL vval;
 }
-引用时候的方式
+Usage example:
 %token <ival> DREG VREG
 %token <dval> CONST
-%type  <dval>dexp
-%type  <vval>vexp
-以%token开始的行定义的是终结符的类型
-以%type开始的行定义是非终结符的类型
+%type <dval> dexp
+%type <vval> vexp
+Lines starting with %token define terminal symbols' types
+Lines starting with %type define non-terminal symbols' types
 */
 
 %union {
@@ -68,32 +69,31 @@ INTERVAL vval;
     char* str;
 }
 %locations
-%define parse.error verbose
+%error-verbose
 
+/* Precedence and associativity definitions */
 /* 
-优先级和结合性定义
-%left 左结合
-%right 右结合
-%nonassoc 无结合性
-%prec <终结符> 强制定义优先级
+- %left left associative
+- %right right associative
+- %nonassoc non-associative
+- %prec terminal forced precedence definition
  */
 %right ASSIGNOP
-%left <ast> OR
-%left <ast> AND
-%left <ast> SINGALAND
-%left <str> RELOP
-%left <ast> MINUS PLUS
-%left <ast> STAR DIV MOD
-%left <ast> POWER
-%right <ast> NOT
+%left OR
+%left AND
+%left SINGALAND
+%left RELOP
+%left MINUS PLUS
+%left STAR DIV MOD
+%left POWER
+%right NOT
 %left LP RP LB RB
 %nonassoc LOWER_THAN_ELSE
 %nonassoc SEMI COMMA
 %nonassoc RETURN IF ELSE WHILE STRUCT GETMEMBER
 
 
-/* 
-在yacc源程序语法规则部分出现的所有终结符（正文字符“+”，“-”等除外）等必须用%token定义，定义形式：
+/* 在yacc源程序语法规则部分出现的所有终结符（正文字符“+”，“-”等除外）等必须用%token定义，定义形式：
 单一数据类型：
 %token 终结符1 终结符2
 多数据类型：
@@ -105,6 +105,32 @@ INTERVAL vval;
 %token <str> ID
 %token FOR
 %token LC RC
+
+/* 运算符标记类型声明 */
+%token <str> ASSIGNOP
+%token <str> OR
+%token <str> AND
+%token <str> SINGALAND
+%token <str> RELOP
+%token <str> MINUS
+%token <str> PLUS
+%token <str> STAR
+%token <str> DIV
+%token <str> MOD
+%token <str> POWER
+%token <str> NOT
+%token <str> LP
+%token <str> RP
+%token <str> LB
+%token <str> RB
+%token <str> SEMI
+%token <str> COMMA
+%token <str> RETURN
+%token <str> IF
+%token <str> ELSE
+%token <str> WHILE
+%token <str> STRUCT
+%token <str> GETMEMBER
 
 /* 非终结符 */
 %type <ast> VarDec 
