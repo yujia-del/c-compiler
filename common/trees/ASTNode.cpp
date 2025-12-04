@@ -60,17 +60,37 @@ AbstractASTNode *AbstractASTNode::getLastPeerNode()
   return t;
 }
 
+// 全局变量，用于生成节点ID
+static int nodeId = 0;
+
 void AbstractASTNode::__printTree(AbstractASTNode *node, int depth)
 {
   if (node == NULL)
     return;
-  std::cout << (int)node->nodeType << " " << typeid(*node).name() << "  "
-            << "\t";
-  std::cout << depth;
-  for (int i = 0; i < depth; i++)
-    std::cout << " ";
+  
+  // 保存当前节点ID
+  int currentId = nodeId++;
+  
+  // 打印节点基本信息（使用%3d确保ID占3位宽度对齐）
+  fprintf(ast_output_file, "%3d : ", currentId);
   node->printInfo(depth);
+  
+  // 打印子节点信息（使用固定宽度确保对齐）
+  fprintf(ast_output_file, "%-12s", "Children: ");
   AbstractASTNode *p = node->child;
+  bool firstChild = true;
+  while (p != NULL)
+  {
+    if (!firstChild)
+      fprintf(ast_output_file, " ");
+    fprintf(ast_output_file, "%3d", nodeId);
+    firstChild = false;
+    p = p->peer;
+  }
+  fprintf(ast_output_file, "\n");
+  
+  // 递归打印所有子节点
+  p = node->child;
   while (p != NULL)
   {
     AbstractASTNode::__printTree(p, depth + 1);
@@ -80,6 +100,8 @@ void AbstractASTNode::__printTree(AbstractASTNode *node, int depth)
 
 void AbstractASTNode::printTree()
 {
+  // 重置节点ID为0
+  nodeId = 0;
   AbstractASTNode::__printTree(this, 0);
 }
 
@@ -90,5 +112,5 @@ RootASTNode::RootASTNode() : AbstractASTNode(ASTNodeType::root)
 
 void RootASTNode::printInfo(int depth)
 {
-  std::cout << this->content << std::endl;
+  fprintf(ast_output_file, "%s\n", this->content.c_str());
 }

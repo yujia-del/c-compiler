@@ -10,13 +10,25 @@ DefFunASTNode::DefFunASTNode(char* content, AbstractASTNode* argList, AbstractAS
 
 void DefFunASTNode::printInfo(int depth)
 {
-    std::cout << "Function define. Name:" << this->content << std::endl;
-    std::cout << " ";
-    for (int i = 0; i < depth + 1; i++) std::cout << " ";
+    fprintf(ast_output_file, "Function define. Name:%s", this->content.c_str());
+    // 打印参数列表，确保格式与其他节点一致
     AbstractASTNode* var = (AbstractASTNode*)this->argList;
-    while (var != NULL) {
+    // 只有当存在参数时才进行特殊处理
+    if (var != NULL) {
+        fprintf(ast_output_file, "\n");
+        // 添加适当的缩进以保持对齐
+        for (int i = 0; i < 8; i++) fprintf(ast_output_file, " ");
         AbstractASTNode::__printTree(var, depth + 1);
         var = var->getPeer();
+        while (var != NULL) {
+            // 参数的兄弟节点也需要保持相同的缩进
+            for (int i = 0; i < 8; i++) fprintf(ast_output_file, " ");
+            AbstractASTNode::__printTree(var, depth + 1);
+            var = var->getPeer();
+        }
+    } else {
+        // 没有参数时也需要输出换行符，确保节点类型和Children信息分开
+        fprintf(ast_output_file, "\n");
     }
 }
 

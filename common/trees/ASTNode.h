@@ -1,6 +1,9 @@
 #ifndef ASTNODE_H
 #define ASTNODE_H
 #include <iostream>
+#include <cstdio>
+
+extern FILE *ast_output_file; // 语法分析输出文件指针
 
 enum class ASTNodeType
 {

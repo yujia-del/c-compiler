@@ -36,7 +36,7 @@ void LoopASTNode::printInfo(int depth)
 {
     if (this->loopType == LoopType::_for)
     {
-        std::cout << "FOR" << std::endl;
+        fprintf(ast_output_file, "RepeatK statement\n");
         // std::cout << "DEC:::::";
 
         AbstractASTNode::__printTree(this->dec, depth + 1);
@@ -49,8 +49,7 @@ void LoopASTNode::printInfo(int depth)
     }
     else
     {
-        std::cout << "WHILE" << std::endl;
-        std::cout << (int)this->getChild()->getNodeType() << std::endl;
-        AbstractASTNode::__printTree(this->cond, depth + 1);
+        fprintf(ast_output_file, "RepeatK statement\n");
+        // AbstractASTNode::__printTree(this->cond, depth + 1);
     }
 }

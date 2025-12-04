@@ -6,15 +6,15 @@ StmtASTNode::StmtASTNode(StmtType type) : AbstractASTNode(ASTNodeType::stmt) {
 
 void StmtASTNode::printInfo(int depth) {
     if (this->type == StmtType::compStmt) {
-        std::cout << "Comp Stmt" << std::endl;
+        fprintf(ast_output_file, "CompoundK statement\n");
     }
     else if (this->type == StmtType::defStmt) {
-        std::cout << "Def Stmt" << std::endl;
+        fprintf(ast_output_file, "Var Declaration\n");
     }
     else if (this->type == StmtType::expStmt) {
-        std::cout << "Exp Stmt" << std::endl;
+        fprintf(ast_output_file, "Exp Stmt\n");
     }
     else if (this->type == StmtType::returnStmt) {
-        std::cout << "Return Stmt" << std::endl;
+        fprintf(ast_output_file, "Return Stmt\n");
     }
 }

@@ -10,10 +10,10 @@ CallFunASTNode::CallFunASTNode(char *content, AbstractASTNode *varList)
 }
 
 void CallFunASTNode::printInfo(int depth) {
-    std::cout << "Call Function." << this->content << std::endl;
-    AbstractASTNode *var = this->varList;
-    while (var != NULL) {
-        AbstractASTNode::__printTree(var, depth + 1);
-        var = var->getPeer();
-    }
+    fprintf(ast_output_file, "WriteK statement\n");
+    // AbstractASTNode *var = this->varList;
+    // while (var != NULL) {
+    //     AbstractASTNode::__printTree(var, depth + 1);
+    //     var = var->getPeer();
+    // }
 }

@@ -1,0 +1,53 @@
+  0 : Root
+Children:     1   1
+  1 : Function define. Name:fibo
+          2 : Children:   
+Children:     3
+  3 : CompoundK statement
+Children:     4   4   4   4
+  4 :   5 : Children:     6   6
+  6 : Children:   
+  7 : Children:   
+  8 : CompoundK statement
+Children:     9
+  9 : Return Stmt
+Children:    10
+ 10 : Children:   
+ 11 :  12 : Children:    13  13
+ 13 : Children:   
+ 14 : Children:   
+ 15 : CompoundK statement
+Children:    16
+ 16 : Return Stmt
+Children:    17
+ 17 : Children:   
+Children:   
+Children:   
+ 18 : Var Declaration
+Children:    19
+ 19 : Children:    20
+ 20 : WriteK statement
+Children:   
+ 21 : Var Declaration
+Children:    22
+ 22 : Children:    23
+ 23 : WriteK statement
+Children:   
+ 24 : Return Stmt
+Children:    25
+ 25 : Children:    26  26
+ 26 : Children:   
+ 27 : Children:   
+ 28 : Function define. Name:main
+Children:    29
+ 29 : CompoundK statement
+Children:    30  30
+ 30 : Var Declaration
+Children:    31
+ 31 : Children:    32
+ 32 : WriteK statement
+Children:   
+ 33 : Exp Stmt
+Children:    34
+ 34 : WriteK statement
+Children:   
