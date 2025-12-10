@@ -13,9 +13,24 @@ CXX = g++
 FLEX = flex
 BISON = bison
 CXXVER = c++11
+LEX_TOOL = generate_lexical_analysis
+LEX_GEN = *.lex
 
 $(PROGRAM): $(OBJ)
 	$(CXX) -o $(PROGRAM) $(OBJ) -std=$(CXXVER) -g
+
+# 词法分析工具构建规则
+$(LEX_TOOL): generate_lexical_analysis.c
+	$(CC) -o $(LEX_TOOL) generate_lexical_analysis.c
+
+# 词法分析目标
+lexical: $(LEX_TOOL) test_input.c
+	./$(LEX_TOOL) test_input.c
+
+# 为每个测试文件创建词法分析目标
+%.lex: $(LEX_TOOL) $(BUILDFOLDER)%
+	@echo "生成词法分析文件 $@..."
+	./$(LEX_TOOL) $(BUILDFOLDER)$* $(BUILDFOLDER)$@
 
 grammar: lexer.l grammar.y
 ifeq ($(GRAMMAREXIST),notexist)
@@ -31,9 +46,9 @@ endif
 	$(CXX) -c $< -o $@ -std=$(CXXVER) -g -I.
 
 clean:
-	rm -rf $(GRAMMARFOLDER) $(OBJ) $(PROGRAM) $(BUILDFOLDER) common/util/io/asm_io.o
+	rm -rf $(GRAMMARFOLDER) $(OBJ) $(PROGRAM) $(BUILDFOLDER) common/util/io/asm_io.o $(LEX_TOOL) $(LEX_GEN)
 
-build:
+build: $(PROGRAM)
 ifeq ($(BUILDEXIST),notexist)
 	mkdir -p $(BUILDFOLDER)
 endif
@@ -54,6 +69,9 @@ endif
 	./fix_build_makefile.sh $(BUILDFOLDER)
 
 # 目标规则引用，允许在根目录直接执行build目录中的目标
-swap loop fibo struct array larra:
+# 同时生成对应的词法分析文件
+swap loop fibo struct array larra: $(LEX_TOOL) build
 	@echo "在build目录中执行 $@ 目标..."
 	@cd $(BUILDFOLDER) && make $@
+	@echo "生成 $@ 的词法分析文件..."
+	./$(LEX_TOOL) $(BUILDFOLDER)$@.c $(BUILDFOLDER)$@.lex
