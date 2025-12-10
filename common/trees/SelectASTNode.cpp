@@ -19,15 +19,6 @@ void SelectASTNode::printInfo(int depth)
 {
     if (this->selectType == SelectType::_if)
     {
-        std::cout << "IF" << std::endl;
-        AbstractASTNode::__printTree(this->condition, depth + 1);
-        AbstractASTNode::__printTree(this->body, depth + 1);
-        if (this->elseStmt != NULL)
-        {
-            for (int i = 0; i < depth; i++)
-                std::cout << " ";
-            std::cout << "ELSE" << std::endl;
-            AbstractASTNode::__printTree(this->elseStmt, depth + 1);
-        }
+        fprintf(ast_output_file, "IF statement\t\t\t");
     }
 }

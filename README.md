@@ -52,21 +52,25 @@
 
 ## 环境准备
 
-* 操作系统：**Ubuntu LTS 18.04**，或者其他的**GNU LINUX**发行版
+* 操作系统：**Ubuntu LTS 18.04**，其他**GNU LINUX**发行版，或**MacOS**
 
-* 依赖包：`nasm`，`flex`，`bison`，`gcc-multilib`，`build-essential`
+* 依赖包：
+  * Linux: `nasm`，`flex`，`bison`，`gcc-multilib`，`build-essential`
+  * MacOS: `nasm`，`flex`，`bison`，`gcc`（可通过Homebrew安装：`brew install nasm flex bison`）
 
 ## 如何运行
 
-* 在代码根目录执行`make grammar`
+1. 在代码根目录执行`make grammar`（重新生成语法分析器文件）
 
-* 在代码根目录执行`make`
+2. 在代码根目录执行`make`（编译项目）
 
-* 执行`make build`
+3. 执行`cp parser build/`（将可执行文件复制到build目录）
 
-* `cd build`，然后执行`make`
-
-* 运行文件生成的二进制文件
+4. 进入build目录并运行编译器：
+   ```bash
+   cd build
+   ./parser -i ../test/swap.c  # 生成.ir和.ast文件
+   ```
 
 ## 文件目录说明
 
@@ -86,10 +90,15 @@
 
         包含主要工具类，中间代码类、汇编代码生成类、io汇编源文件
 
-2. `Linux`/`MacOS`
+2. `test`目录
 
+    包含测试用的C语言源文件（如swap.c）及其生成的中间文件（.ir、.ast等）
 
-3. `Makefile`，Linux系统的构建文件
+3. `build`目录
+
+    用于存放编译后的可执行文件
+
+4. `Makefile`，项目构建文件（支持Linux和MacOS）
 
 ## 相关代码说明
 
@@ -105,3 +114,23 @@
 2. `./common/symbol/symbol.h`中`symbol`类的说明
 
     请负责中间代码生成部分的程序员注意，不需要修改offset值和index值，开放给中间代码生成部分的类成员变量只有idName和idType
+
+## 新功能说明
+
+1. **语法树生成**：
+   - 支持将源代码解析后的抽象语法树（AST）保存到文件中
+   - 生成的.ast文件与输入的.c文件位于同一目录
+   - 包含完整的节点结构、层次关系和节点属性信息
+
+2. **四元式输出格式优化**：
+   - 四元式表格采用固定宽度列对齐格式
+   - 操作符、参数、结果等字段宽度统一设置为15个字符
+   - 提高了IR文件的可读性和美观性
+
+## 命令行参数
+
+编译器支持以下命令行参数：
+- `-i`：生成中间代码（.ir文件）和语法树（.ast文件）
+- `-t`：打印抽象语法树
+- `-a`：打印汇编代码
+- `-d`：调试模式，打印所有信息

@@ -8,5 +8,5 @@ OperatorASTNode::OperatorASTNode(char *content, opType type)
 
 void OperatorASTNode::printInfo(int depth)
 {
-    std::cout << "Expr, op:" << this->content << ", ";
+    fprintf(ast_output_file, "Expr\t\t\t\t\top:%s", this->content.c_str());
 }

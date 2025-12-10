@@ -8,6 +8,8 @@ enum class StmtType
     expStmt = 2,
     defStmt = 3,
     returnStmt = 4,
+    writeStmt = 5,
+    whileStmt = 6,
 };
 
 class StmtASTNode : public AbstractASTNode

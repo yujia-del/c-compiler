@@ -1,6 +1,9 @@
 #include "InterMediate.h"
 #include <typeinfo>
 #include <cstdio>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 InterMediate::InterMediate(RootASTNode *rootNode, StructTable *structTable)
 
 {
@@ -1097,12 +1100,52 @@ void InterMediate::backpatch(std::list<int> *backList, int target)
 void InterMediate::printQuads()
 {
     std::vector<Quad>::iterator it;
-    std::cout << "\t   Operator   \targ1\targ2\tresult" << std::endl;
+    std::cout << "	   Operator   	arg1	arg2	result" << std::endl;
     int count = 0;
     for (it = this->quads.begin(); it != this->quads.end(); it++)
     {
         std::cout << count++ << "\t";
         it->printQuad();
     }
+    return;
+}
+
+void InterMediate::writeQuadsToFile(const std::string &filename)
+{
+    // 将四元式写入到指定文件中
+    std::cout << "Attempting to write IR to file: " << filename << std::endl;
+    
+    // 创建输出目录（如果不存在）
+    std::string dir = filename.substr(0, filename.find_last_of("/\\"));
+    if (!dir.empty()) {
+        std::string mkdirCmd = "mkdir -p " + dir;
+        system(mkdirCmd.c_str());
+    }
+    
+    std::ofstream outfile(filename);
+    if (!outfile.is_open()) {
+        std::cerr << "Error: Cannot open file " << filename << " for writing." << std::endl;
+        perror("ofstream error");
+        return;
+    }
+    
+    std::cout << "Successfully opened file for writing: " << filename << std::endl;
+    
+    outfile << "\t   Operator   \targ1\targ2\tresult" << std::endl;
+    int count = 0;
+    std::vector<Quad>::iterator it;
+    for (it = this->quads.begin(); it != this->quads.end(); it++)
+    {
+        outfile << count++ << "\t";
+        // 直接调用printQuad方法，它会将输出写入到cout
+        // 我们需要修改printQuad方法，使其接受一个ostream参数
+        // 但为了简单起见，我们可以直接重定向cout到文件
+        std::streambuf* oldBuf = std::cout.rdbuf(outfile.rdbuf());
+        it->printQuad();
+        std::cout.rdbuf(oldBuf);
+    }
+    
+    outfile.close();
+    std::cout << "IR code written to file: " << filename << std::endl;
     return;
 }

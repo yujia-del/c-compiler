@@ -1,5 +1,9 @@
 #include "Quad.h"
 #include <typeinfo>
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <sstream>
 
 using namespace compiler;
 
@@ -232,15 +236,32 @@ std::string Quad::printOp()
     }
 }
 void Quad::printQuad()
-// 打印生成的四元式
+// 打印生成的四元式，使用固定宽度格式确保对齐
 {
+    // 定义各列的宽度
+    const int OP_WIDTH = 15;
+    const int ARG_WIDTH = 15;
+    const int RESULT_WIDTH = 15;
+    
+    // 辅助函数：格式化字符串为指定宽度
+    auto formatStr = [](const std::string &str, int width) {
+        std::ostringstream oss;
+        oss << std::left << std::setw(width) << str;
+        return oss.str();
+    };
+    
+    std::string opStr = this->printOp();
+    std::string arg1Str, arg2Str, resultStr;
+    
     switch (this->flag)
     {
     case 0:
     {
-        std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.target << "\t" << this->result.target << std::endl;
-    // Quad::Quad(OpCode op, int arg1, int arg2, int result)
-    // 都是字面量： 5 = 1*5 
+        // Quad::Quad(OpCode op, int arg1, int arg2, int result)
+        // 都是字面量： 5 = 1*5 
+        arg1Str = std::to_string(this->arg1.target);
+        arg2Str = std::to_string(this->arg2.target);
+        resultStr = std::to_string(this->result.target);
         break;
     }
     case 1:
@@ -248,86 +269,109 @@ void Quad::printQuad()
         // Quad::Quad(OpCode op, symbol *arg1, int arg2, int result)
         // 变量跟字面量运算，值为int
         if (arg1.var == NULL)
-            std::cout << this->printOp() << "\t-\t" << this->arg2.target << "\t" << this->result.target << std::endl;
+            arg1Str = "-";
         else
-            std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t" << this->arg2.target << "\t" << this->result.target << std::endl;
+            arg1Str = this->arg1.var->getIdName();
+        
+        arg2Str = std::to_string(this->arg2.target);
+        resultStr = std::to_string(this->result.target);
         break;
     }
     case 2:
     {
+        arg1Str = std::to_string(this->arg1.target);
+        
         if (arg2.var == NULL)
-            std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.var->getIdName() << "\t" << this->result.target << std::endl;
+            arg2Str = "-";
         else
-            std::cout << this->printOp() << "\t" << this->arg1.target << "\t-\t" << this->result.target << std::endl;
+            arg2Str = this->arg2.var->getIdName();
+        
+        resultStr = std::to_string(this->result.target);
         break;
     }
     case 3:
     {
         if (arg1.var == NULL)
-        {
-            if (arg2.var == NULL)
-                std::cout << this->printOp() << "\t-\t-\t" << this->result.target << std::endl;
-            else
-                std::cout << this->printOp() << "\t-\t" << this->arg2.var->getIdName() << "\t" << this->result.target << std::endl;
-        }
+            arg1Str = "-";
         else
-        {
-            if (arg2.var == NULL)
-                std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t-\t" << this->result.target << std::endl;
-            else
-                std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t" << this->arg2.var->getIdName() << "\t" << this->result.target << std::endl;
-        }
+            arg1Str = this->arg1.var->getIdName();
+        
+        if (arg2.var == NULL)
+            arg2Str = "-";
+        else
+            arg2Str = this->arg2.var->getIdName();
+        
+        resultStr = std::to_string(this->result.target);
         break;
     }
     case 4:
     {
+        arg1Str = std::to_string(this->arg1.target);
+        arg2Str = std::to_string(this->arg2.target);
+        
         if (result.var == NULL)
-            std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.target << "\t-" << std::endl;
+            resultStr = "-";
         else
-            std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.target << "\t" << this->result.var->getIdName() << std::endl;
+            resultStr = this->result.var->getIdName();
+        break;
     }
-    break;
     case 5:
     {
         if (arg1.var == NULL)
-            std::cout << this->printOp() << "\t-\t" << this->arg2.target << "\t";
+            arg1Str = "-";
         else
-            std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t" << this->arg2.target << "\t";
-
+            arg1Str = this->arg1.var->getIdName();
+        
+        arg2Str = std::to_string(this->arg2.target);
+        
         if (result.var == NULL)
-            std::cout << "-" << std::endl;
+            resultStr = "-";
         else
-            std::cout << this->result.var->getIdName() << std::endl;
+            resultStr = this->result.var->getIdName();
+        break;
     }
-    break;
     case 6:
     {
+        arg1Str = std::to_string(this->arg1.target);
+        
         if (arg2.var == NULL)
-            std::cout << this->printOp() << "\t" << this->arg1.target << "\t-\t";
+            arg2Str = "-";
         else
-            std::cout << this->printOp() << "\t" << this->arg1.target << "\t" << this->arg2.var->getIdName() << "\t";
+            arg2Str = this->arg2.var->getIdName();
+        
         if (result.var == NULL)
-            std::cout << "-" << std::endl;
+            resultStr = "-";
         else
-            std::cout << this->result.var->getIdName() << std::endl;
+            resultStr = this->result.var->getIdName();
+        break;
     }
-    break;
     case 7:
     {
         if (arg1.var == NULL)
-            std::cout << this->printOp() << "\t-\t";
+            arg1Str = "-";
         else
-            std::cout << this->printOp() << "\t" << this->arg1.var->getIdName() << "\t";
+            arg1Str = this->arg1.var->getIdName();
+        
         if (arg2.var == NULL)
-            std::cout << "-\t";
+            arg2Str = "-";
         else
-            std::cout << this->arg2.var->getIdName() << "\t";
+            arg2Str = this->arg2.var->getIdName();
+        
         if (result.var == NULL)
-            std::cout << "-" << std::endl;
+            resultStr = "-";
         else
-            std::cout << this->result.var->getIdName() << std::endl;
-    }
-    default:
+            resultStr = this->result.var->getIdName();
         break;
     }
+    default:
+        arg1Str = arg2Str = resultStr = "-";
+        break;
+    }
+    
+    // 输出格式化的四元式
+    std::cout << formatStr(opStr, OP_WIDTH) 
+              << formatStr(arg1Str, ARG_WIDTH) 
+              << formatStr(arg2Str, ARG_WIDTH) 
+              << formatStr(resultStr, RESULT_WIDTH) 
+              << std::endl;
 }

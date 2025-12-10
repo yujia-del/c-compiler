@@ -1,11 +1,11 @@
 %x COMMENT
 %{
-#include "Linux/grammar.tab.h"
+#include "grammar.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/trees.h"
+#include "common/trees.h"
 
 extern char *yytext;
 extern int column;

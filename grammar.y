@@ -19,9 +19,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include "../common/trees.h"
-#include "../common/util/InterMediate.h"
-#include "../common/util/AsmGenerator.h"
+#include "common/trees.h"
+#include "common/util/InterMediate.h"
+#include "common/util/AsmGenerator.h"
 class AbstractASTNode; // 数据类型定义：定义语义动作使用到的数据类型
 extern char *yytext; // 外部变量和全局变量定义
 extern int yylex();
@@ -140,6 +140,7 @@ Lines starting with %type define non-terminal symbols' types
 %type <ast> StmtList Stmt Dec DecList Def
 %type <ast> Args ParamDec VarList FunDec DecFor
 %type <ast> StructSpecifier StructDecList StructDec
+%type <ast> Program
 %%
 
 /* 
@@ -178,8 +179,8 @@ A：  α1  |  {语义动作1}
 Program: ExtDefList {
         root = new RootASTNode();
         root->addChildNode($1);
+        $$ = root;
     }
-    ;
 /* 
   例：文法规则和动作：
   exp	:	exp '+' term	{ $$ = $1 + $3; }
@@ -603,6 +604,10 @@ std::string replaceExtName(char* fileName) {
     return rev;
 }
 
+// 全局输出文件指针
+FILE *lex_output_file = stdout;
+FILE *ast_output_file = stdout;
+
 int main(int argc,char* argv[])
 {
     InterMediate* im;
@@ -642,11 +647,41 @@ int main(int argc,char* argv[])
     if (flag_print_ast) {
         root->printTree();
     }
+    
+    // 将语法树写入到文件
+    std::string astFileName(filename);
+    size_t pos = astFileName.rfind('.');
+    if (pos != std::string::npos) {
+        astFileName = astFileName.substr(0, pos) + ".ast";
+    } else {
+        astFileName += ".ast";
+    }
+    FILE *ast_file = fopen(astFileName.c_str(), "w");
+    if (ast_file != NULL) {
+        FILE *old_ast_output = ast_output_file;
+        ast_output_file = ast_file;
+        root->printTree();
+        ast_output_file = old_ast_output;
+        fclose(ast_file);
+        printf("AST written to file: %s\n", astFileName.c_str());
+    } else {
+        printf("Error: Cannot open AST file %s for writing\n", astFileName.c_str());
+    }
     im = new InterMediate((RootASTNode *)root, structTable);
     im->Generate(im->getRoot(), im->getTable());
     if (flag_print_ir) {
         im->printQuads();
     }
+    // 将四元式写入到文件
+    std::string irFileName(filename);
+    size_t irPos = irFileName.rfind('.');
+    if (irPos != std::string::npos) {
+        irFileName = irFileName.substr(0, irPos) + ".ir";
+    } else {
+        irFileName += ".ir";
+    }
+    im->writeQuadsToFile(irFileName);
+    
     AsmGenerator* asmgenerator = new AsmGenerator(im->getQuads(), im->getTempVars(), im->getTable(), im->getFuncTable());
     asmgenerator->generate();
     if (flag_print_asm) {

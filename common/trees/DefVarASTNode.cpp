@@ -24,21 +24,21 @@ void DefVarASTNode::printInfo(int depth)
         AbstractASTNode *child = this->getChild();
         if (child != NULL && child->getNodeType() == ASTNodeType::op) {
             // 如果子节点是运算符节点，那么这是一个变量声明语句
-            std::cout << "Var Declaration, ";
+            fprintf(ast_output_file, "Var Declaration\t\t\t");
         } else {
             // 否则，这可能是一个类型说明符
             if (type == symbolType::integer)
-                std::cout << "Type Specifier, int, ";
+                fprintf(ast_output_file, "Type Specifier\t\t\t\tint");
             else if (type == symbolType::pointer)
-                std::cout << "Type Specifier, pointer, ";
+                fprintf(ast_output_file, "Type Specifier\t\t\t\tpointer");
             else if (type == symbolType::Array)
-                std::cout << "Type Specifier, array, ";
+                fprintf(ast_output_file, "Type Specifier\t\t\t\tarray");
             else if (type == symbolType::Struct)
-                std::cout << "Type Specifier, struct " << this->structType << ", ";
+                fprintf(ast_output_file, "Type Specifier\t\t\t\tstruct %s", this->structType.c_str());
         }
     } else {
         // 否则，这是一个简单的变量声明
-        std::cout << "ID Declaration, symbol:" << this->content << ", ";
+        fprintf(ast_output_file, "ID Declaration\t\t\t\tsymbol:%s", this->content.c_str());
     }
 }
 

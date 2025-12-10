@@ -26,6 +26,11 @@ AbstractASTNode::AbstractASTNode(char *content, ASTNodeType nodeType)
   this->nodeType = nodeType;
 }
 
+AbstractASTNode::~AbstractASTNode() {
+  // 清理子节点（如果需要）
+  // 这里简化处理，实际可能需要递归清理所有子节点和兄弟节点
+}
+
 void AbstractASTNode::addChildNode(AbstractASTNode *node)
 {
   if (node != NULL)
@@ -61,29 +66,51 @@ AbstractASTNode *AbstractASTNode::getLastPeerNode()
 }
 
 // 全局变量，用于生成节点ID
-static int nodeId = 0;
+int AbstractASTNode::nodeId = 0;
 
-void AbstractASTNode::__printTree(AbstractASTNode *node, int depth)
+// 第一次遍历：为所有节点分配ID
+void AbstractASTNode::__assignIds(AbstractASTNode *node, std::map<AbstractASTNode*, int> &nodeMap)
 {
   if (node == NULL)
     return;
   
-  // 保存当前节点ID
-  int currentId = nodeId++;
+  // 分配ID并存储映射关系
+  nodeMap[node] = nodeId++;
   
-  // 打印节点基本信息（使用%3d确保ID占3位宽度对齐）
-  fprintf(ast_output_file, "%3d : ", currentId);
+  // 递归处理子节点
+  AbstractASTNode *p = node->child;
+  while (p != NULL)
+  {
+    AbstractASTNode::__assignIds(p, nodeMap);
+    p = p->peer;
+  }
+}
+
+// 第二次遍历：打印所有节点信息
+void AbstractASTNode::__printNodes(AbstractASTNode *node, const std::map<AbstractASTNode*, int> &nodeMap, int depth)
+{
+  if (node == NULL)
+    return;
+  
+  // 获取当前节点ID
+  int currentId = nodeMap.at(node);
+  
+  // 打印节点基本信息
+  fprintf(ast_output_file, "%d : ", currentId);
+  
+  // 调用printInfo方法输出节点类型和内容
   node->printInfo(depth);
   
-  // 打印子节点信息（使用固定宽度确保对齐）
-  fprintf(ast_output_file, "%-12s", "Children: ");
+  // 打印子节点信息
+  fprintf(ast_output_file, "\t\tChildren: ");
+  
   AbstractASTNode *p = node->child;
   bool firstChild = true;
   while (p != NULL)
   {
     if (!firstChild)
       fprintf(ast_output_file, " ");
-    fprintf(ast_output_file, "%3d", nodeId);
+    fprintf(ast_output_file, "%d", nodeMap.at(p));
     firstChild = false;
     p = p->peer;
   }
@@ -93,9 +120,31 @@ void AbstractASTNode::__printTree(AbstractASTNode *node, int depth)
   p = node->child;
   while (p != NULL)
   {
-    AbstractASTNode::__printTree(p, depth + 1);
+    AbstractASTNode::__printNodes(p, nodeMap, depth + 1);
     p = p->peer;
   }
+}
+
+// 主打印方法
+void AbstractASTNode::__printTree(AbstractASTNode *node, int depth)
+{
+  if (node == NULL)
+    return;
+  
+  // 重置nodeId
+  nodeId = 0;
+  
+  // 创建节点到ID的映射
+  std::map<AbstractASTNode*, int> nodeMap;
+  
+  // 第一次遍历：分配ID
+  AbstractASTNode::__assignIds(node, nodeMap);
+  
+  // 重置nodeId用于第二次遍历
+  nodeId = 0;
+  
+  // 第二次遍历：打印节点信息
+  AbstractASTNode::__printNodes(node, nodeMap, depth);
 }
 
 void AbstractASTNode::printTree()

@@ -21,6 +21,15 @@ enum class ASTNodeType
     root = 12,
 };
 
+// 包含必要的头文件
+#include <map>
+
+// 前向声明，避免循环引用
+namespace compiler {
+    class Quad;
+}
+using namespace compiler;
+
 class AbstractASTNode
 {
 private:
@@ -32,6 +41,9 @@ private:
 protected:
     std::string content;
     static void __printTree(AbstractASTNode *node, int depth);
+    static void __assignIds(AbstractASTNode *node, std::map<AbstractASTNode*, int> &nodeMap);
+    static void __printNodes(AbstractASTNode *node, const std::map<AbstractASTNode*, int> &nodeMap, int depth);
+    static int nodeId; // 用于生成节点ID
     // inline AbstractASTNode* getChild() { return this->child; }
 public:
     AbstractASTNode();
@@ -48,6 +60,8 @@ public:
     inline ASTNodeType getNodeType() { return this->nodeType; }
     inline std::string getContent() { return this->content; }
     virtual void printInfo(int depth) = 0;
+    virtual Quad *genQuad() { return NULL; }
+    virtual ~AbstractASTNode();
 };
 
 class RootASTNode : public AbstractASTNode

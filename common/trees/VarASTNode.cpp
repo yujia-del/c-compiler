@@ -8,5 +8,5 @@ VarASTNode::VarASTNode(char *content, AbstractASTNode *value)
 
 void VarASTNode::printInfo(int depth)
 {
-    std::cout << "ID Declaration, symbol:" << this->content << ", ";
+    fprintf(ast_output_file, "ID Declaration\t\t\t\tsymbol:%s", this->content.c_str());
 }

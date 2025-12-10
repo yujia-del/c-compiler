@@ -6,7 +6,7 @@ LiteralASTNode::LiteralASTNode(char *content) : AbstractASTNode(content, ASTNode
 
 void LiteralASTNode::printInfo(int depth)
 {
-    std::cout << "Const Declaration, " << this->getValue() << ", ";
+    fprintf(ast_output_file, "Const Declaration\t\t\t	%d", this->getValue());
 }
 
 int LiteralASTNode::getValue()
