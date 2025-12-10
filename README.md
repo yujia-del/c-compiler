@@ -60,17 +60,47 @@
 
 ## 如何运行
 
-1. 在代码根目录执行`make grammar`（重新生成语法分析器文件）
+### 构建步骤
 
-2. 在代码根目录执行`make`（编译项目）
+最简单的完整构建方式是执行以下命令：
 
-3. 执行`cp parser build/`（将可执行文件复制到build目录）
+```bash
+# 在代码根目录执行
+make grammar && make && make build
+```
 
-4. 进入build目录并运行编译器：
-   ```bash
-   cd build
-   ./parser -i ../test/swap.c  # 生成.ir和.ast文件
-   ```
+这个命令序列将：
+1. 生成语法分析器文件
+2. 编译项目生成parser可执行文件
+3. 创建build目录并复制所有必要文件
+
+### 清理构建产物
+
+如果需要清理所有构建产物，可以使用以下命令：
+make clean
+
+执行`make clean`会删除以下内容：
+- 语法分析文件夹 (`./output/yufa/`)：包含bison和flex生成的文件
+- 所有目标文件 (.o文件)
+- 可执行文件 (`parser`)
+- 构建文件夹 (`build/`)：包含测试程序和IO文件
+- 汇编IO对象文件 (`common/util/io/asm_io.o`)
+
+### 运行编译器
+
+构建完成后，可以在build目录中运行编译器：
+
+```bash
+cd build
+./parser test/swap.c  # 默认行为
+./parser -i test/swap.c  # 生成中间代码和语法树
+```
+
+构建成功后，build目录将包含：
+- parser可执行文件
+- 所有测试文件（.c）
+- io目录（包含汇编I/O文件）
+- 从example目录复制的Makefile（用于编译测试程序）
 
 ## 文件目录说明
 
@@ -92,13 +122,21 @@
 
 2. `test`目录
 
-    包含测试用的C语言源文件（如swap.c）及其生成的中间文件（.ir、.ast等）
+    包含测试用的C语言源文件（如swap.c、array.c等）及其生成的中间文件（.ir、.ast等）
 
 3. `build`目录
 
-    用于存放编译后的可执行文件
+    用于存放编译后的可执行文件和测试环境
 
-4. `Makefile`，项目构建文件（支持Linux和MacOS）
+4. `example`目录
+
+    包含一个Makefile，用于在build目录中编译和运行测试程序，支持将C语言测试程序编译为汇编并执行
+
+5. `output`目录
+
+    存放由flex和bison生成的语法分析器相关文件
+
+6. `Makefile`，项目构建文件（支持Linux和MacOS）
 
 ## 相关代码说明
 
@@ -134,3 +172,28 @@
 - `-t`：打印抽象语法树
 - `-a`：打印汇编代码
 - `-d`：调试模式，打印所有信息
+
+## 编译和运行测试程序
+
+构建完成后，可以在build目录中使用example/Makefile编译和运行测试程序：
+
+```bash
+cd build
+# 编译并运行单个测试程序
+make swap  # 编译并运行swap.c
+
+# 编译并运行所有测试程序
+make all
+```
+
+每个测试程序的编译过程包括：
+1. 使用parser将C代码转换为汇编代码
+2. 使用nasm汇编器将汇编代码转换为目标文件
+3. 使用gcc链接生成可执行文件
+
+## 注意事项
+
+1. 该编译器实现了C语言的一个子集，支持基本的数据类型、控制结构和运算操作
+2. 构建顺序非常重要，必须先执行`make grammar`，然后执行`make`，最后执行`make build`
+3. 在MacOS上运行时，确保已通过Homebrew安装了所有必要的依赖工具
+4. 测试程序需要通过io目录下的汇编I/O文件来实现输入输出功能
