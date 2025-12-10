@@ -79,6 +79,7 @@ make grammar && make && make build
 如果需要清理所有构建产物，可以使用以下命令：
 make clean
 
+
 执行`make clean`会删除以下内容：
 - 语法分析文件夹 (`./output/yufa/`)：包含bison和flex生成的文件
 - 所有目标文件 (.o文件)
