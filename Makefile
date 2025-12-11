@@ -1,5 +1,5 @@
 PROGRAM = parser
-GRAMMARFOLDER = ./output/yufa/
+GRAMMARFOLDER = ./output/
 BUILDFOLDER = build/
 BUILDIO = build/io
 NASM = nasm
@@ -7,7 +7,7 @@ BUILDIOEXIST = $(shell if [ -d $(BUILDIO) ]; then echo "exist"; else echo "notex
 GRAMMAREXIST = $(shell if [ -d $(GRAMMARFOLDER) ]; then echo "exist"; else echo "notexist"; fi;)
 BUILDEXIST = $(shell if [ -d $(BUILDFOLDER) ]; then echo "exist"; else echo "notexist"; fi;)
 DEPS = $(shell find ./ -name "*.h")
-SRC = $(shell find ./common -name "*.cpp") ./output/yufa/grammar.tab.cpp ./output/yufa/lexer.flex.cpp
+SRC = $(shell find ./common -name "*.cpp") ./output/grammar.tab.cpp ./output/lexer.flex.cpp
 OBJ = $(SRC:%.cpp=%.o)
 CXX = g++
 FLEX = flex
@@ -46,7 +46,7 @@ endif
 	$(CXX) -c $< -o $@ -std=$(CXXVER) -g -I.
 
 clean:
-	rm -rf $(GRAMMARFOLDER) $(OBJ) $(PROGRAM) $(BUILDFOLDER) common/util/io/asm_io.o $(LEX_TOOL) $(LEX_GEN)
+	rm -rf $(GRAMMARFOLDER)grammar.tab.cpp $(GRAMMARFOLDER)grammar.tab.h $(GRAMMARFOLDER)lexer.flex.cpp $(OBJ) $(PROGRAM) $(BUILDFOLDER) common/util/io/asm_io.o $(LEX_TOOL) $(LEX_GEN)
 
 build: $(PROGRAM)
 ifeq ($(BUILDEXIST),notexist)

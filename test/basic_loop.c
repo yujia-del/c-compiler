@@ -1,4 +1,5 @@
-int main() {
+int main()
+{
     int a, b = 1;
     int c = 3;
     a = b + (10 / 2) ^ 3; // pay attention to operation priority
