@@ -290,7 +290,6 @@ int write_lexical_result(const char* output_file) {
     }
     
     fclose(f);
-    printf("词法分析结果已写入: %s\n", output_file);
     return 1;
 }
 

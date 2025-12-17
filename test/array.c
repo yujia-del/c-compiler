@@ -9,5 +9,10 @@ int main()
     p = &a;
     *p = a;
     a = *p;
+    int i;
+    for(i=0;i<10;i=i+1)
+    {
+        array[i] = i;
+    }
     print_int(a);
 }
