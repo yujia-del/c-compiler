@@ -55,17 +55,12 @@ endif
 ifeq ($(BUILDIOEXIST),notexist)
 	mkdir -p $(BUILDIO)
 endif
-	# 使用32位ELF格式，确保汇编代码兼容
 	$(NASM) -f elf -d ELF_TYPE common/util/io/asm_io.asm -o common/util/io/asm_io.o
-	# 复制必要文件到build目录
 	cp $(PROGRAM) $(BUILDFOLDER)
 	cp common/util/io/asm_io.o $(BUILDIO)
 	cp common/util/io/asm_io.inc $(BUILDIO)
-	# 复制测试文件并确保正确复制到build目录根目录
 	cp -f test/*.c $(BUILDFOLDER)
-	# 复制Makefile到build目录
 	cp example/Makefile $(BUILDFOLDER)
-	# 使用专用脚本修复build目录的Makefile，处理路径引用和MacOS适配
 	./fix_build_makefile.sh $(BUILDFOLDER)
 
 # 目标规则引用，允许在根目录直接执行build目录中的目标

@@ -33,68 +33,47 @@ all: swap loop fibo struct array larra
 
 # 修复后的swap目标规则，支持MacOS系统
 swap: swap.c
-	# 确保swap.ir是文件而不是目录
 	rm -rf swap.ir 2>/dev/null || true
 	touch swap.ir
-	# 运行parser生成汇编代码
 	$(PROGRAM) swap.c
-	# 编译并链接
 	$(NASM) -f elf swap.asm -o swap.o
 
 # 修复后的loop目标规则，支持MacOS系统
 loop: basic_loop.c
-	# 使用模拟parser脚本避免段错误问题
 	@echo "开始处理basic_loop.c..."
-	# 确保basic_loop.ir是文件而不是目录
 	@rm -rf basic_loop.ir 2>/dev/null || true
-	# 使用Python模拟parser生成必要的文件
 	@python3 simulate_parser.py basic_loop.c
-	# 尝试编译汇编
 	@nasm -f elf basic_loop.asm -o basic_loop.o 2>/dev/null || true
-	# 显示状态信息
 	@echo "处理完成，使用模拟parser避免了段错误问题"
-	# 检查生成的文件
 	@ls -la basic_loop.*
 	@echo "loop目标执行完成"
 
 # 修复后的fibo目标规则，支持MacOS系统
 fibo: fibo.c
-	# 确保fibo.ir是文件而不是目录
 	rm -rf fibo.ir 2>/dev/null || true
 	touch fibo.ir
-	# 运行parser生成汇编代码
 	$(PROGRAM) fibo.c
-	# 编译并链接
 	$(NASM) -f elf fibo.asm -o fibo.o
 
 # 修复后的struct目标规则，支持MacOS系统
 struct: struct.c
-	# 确保struct.ir是文件而不是目录
 	rm -rf struct.ir 2>/dev/null || true
 	touch struct.ir
-	# 运行parser生成汇编代码
 	$(PROGRAM) struct.c
-	# 编译并链接
 	$(NASM) -f elf struct.asm -o struct.o
 
 # 修复后的array目标规则，支持MacOS系统
 array: array.c
-	# 确保array.ir是文件而不是目录
 	rm -rf array.ir 2>/dev/null || true
 	touch array.ir
-	# 运行parser生成汇编代码
 	$(PROGRAM) array.c
-	# 编译并链接
 	$(NASM) -f elf array.asm -o array.o
 
 # 修复后的larra目标规则，支持MacOS系统
 larra: larra.c
-	# 确保larra.ir是文件而不是目录
 	rm -rf larra.ir 2>/dev/null || true
 	touch larra.ir
-	# 运行parser生成汇编代码
 	$(PROGRAM) larra.c
-	# 编译并链接
 	$(NASM) -f elf larra.asm -o larra.o
 EOF
 
