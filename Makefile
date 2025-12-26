@@ -65,7 +65,7 @@ endif
 
 # 目标规则引用，允许在根目录直接执行build目录中的目标
 # 同时生成对应的词法分析文件
-swap loop fibo struct array larra: $(LEX_TOOL) build
+swap loop fibo struct array error: $(LEX_TOOL) build
 	@echo "在build目录中执行 $@ 目标..."
 	@cd $(BUILDFOLDER) && make $@
 	@echo "生成 $@ 的词法分析文件..."

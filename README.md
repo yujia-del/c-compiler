@@ -80,9 +80,10 @@ brew install nasm flex bison gcc
 ```bash
 # 在项目根目录执行以下命令
 make grammar    # 生成语法分析器
-make           # 编译项目
-make build     # 创建构建目录
-#或者直接一行命令
+make            # 编译项目
+make build      # 创建构建目录
+
+# 或使用单行命令
 make grammar&make&make build
 ```
 
@@ -106,117 +107,71 @@ make clean
 ### 使用编译器
 
 #### 基本用法
-```bash
-cd build
-./parser test/swap.c          # 默认编译
-./parser -i test/swap.c       # 生成中间代码和语法树
-./parser -t test/swap.c       # 打印抽象语法树
-./parser -a test/swap.c       # 打印汇编代码
-./parser -d test/swap.c       # 调试模式（打印所有信息）
-```
 
 #### 编译测试程序
 ```bash
-# 在 build 目录中
+make array
+make loop
+make fibo
+make struct
 make swap    # 编译并运行 swap.c
-make all     # 编译并运行所有测试程序
 ```
-
-每个测试程序的编译过程包括：
-1. 使用 parser 将 C 代码转换为汇编代码
-2. 使用 nasm 汇编器将汇编代码转换为目标文件
-3. 使用 gcc 链接生成可执行文件
-
 ## 文件目录说明
 
 1. `common`目录
-
-    包含了主要类文件，目录下的trees.h文件包含了与语法树相关的类，外部使用时只需要包含该头文件即可包含所有相关头文件
-
-    * `symbol`子目录
-
-        包含了symbol符号表类、FuncSymbol符号表类的源文件
-
-    * `trees`子目录
-
-        包含了抽象语法树（AST）相关类源文件
-    
-    * `util`子目录
-
-        包含主要工具类，中间代码类、汇编代码生成类、io汇编源文件
+    包含核心功能类文件，其中trees.h为主要头文件，集成了所有语法树相关类的引用。
+    * `symbol`子目录：包含符号表类及函数符号表类的实现
+    * `trees`子目录：包含抽象语法树（AST）相关类的实现
+    * `util`子目录：包含工具类、中间代码生成器和汇编代码生成器
 
 2. `test`目录
-
-    包含测试用的C语言源文件（如swap.c、array.c等）及其生成的中间文件（.ir、.ast等）
+    包含测试用C语言源文件（如swap.c、array.c等）及其生成的中间文件
 
 3. `build`目录
-
-    用于存放编译后的可执行文件和测试环境
+    存放编译后的可执行文件和测试环境
 
 4. `example`目录
-
-    包含一个Makefile，用于在build目录中编译和运行测试程序，支持将C语言测试程序编译为汇编并执行
+    包含Makefile模板，用于在build目录中编译测试程序
 
 5. `output`目录
+    存放flex和bison生成的语法分析器相关文件
 
-    存放由flex和bison生成的语法分析器相关文件
+6. `Makefile`：项目主构建文件（支持Linux和MacOS）
 
-6. `Makefile`，项目构建文件（支持Linux和MacOS）
+## 关键类说明
 
-## 相关代码说明
+### SymbolTable类（./common/symbol/symbol.h）
 
-1. `./common/symbol/symbol.h`中`SymbolTable`类的说明
+|方法名|返回值|参数|功能|参数说明|
+|:----:|:----:|:--:|:--:|:------:|
+|`SymbolTable`|无|`bool isFun`|构造函数，创建空符号表|是否为函数作用域|
+|`createChildTable`|`SymbolTable*`|`bool isFun`|创建并返回子符号表|子作用域是否为函数|
+|`addSymbol`|`int`|`string idName, symbolType idType`|添加符号，成功返回0，重复返回-1|符号名和符号类型|
+|`findSymbol`|`symbol*`|`const string name`|查找符号（递归到父表）|符号名|
 
-    |类方法|返回值|参数列表|作用|参数意义|
-    |:----:|:---:|:-----:|:--:|:-----:|
-    |`SymbolTable`||`bool isFun`|唯一公有构造函数，创建一个空的符号表|该作用域是否为函数|
-    |`createChildTable`|`SymbolTable*`|`bool isFun`|创建一个子符号表并返回（已经设置了peer指针和child指针，调用者无需负责）|该子符号表控制作用域是否为函数|
-    |`addSymbol`|`int`|`string idName, symbolType idType`|尝试向当前符号表添加符号，如果存在相同符号名返回-1，成功则返回0|符号名和符号类型|
-    |`findSymbol`|`symbol*`|`const string name`|在符号表中搜索符号，如果当前符号表没有搜索到则向父级符号表搜索|符号名|
-
-2. `./common/symbol/symbol.h`中`symbol`类的说明
-
-    请负责中间代码生成部分的程序员注意，不需要修改offset值和index值，开放给中间代码生成部分的类成员变量只有idName和idType
+> 注意：中间代码生成部分只需使用idName和idType属性，无需修改offset和index值
 
 ## 新功能说明
 
-1. **语法树生成**：
-   - 支持将源代码解析后的抽象语法树（AST）保存到文件中
-   - 生成的.ast文件与输入的.c文件位于同一目录
-   - 包含完整的节点结构、层次关系和节点属性信息
+1. **语法树生成**
+   - 支持将抽象语法树（AST）保存到.ast文件
+   - 包含完整节点结构、层次关系和属性信息
 
-2. **四元式输出格式优化**：
-   - 四元式表格采用固定宽度列对齐格式
-   - 操作符、参数、结果等字段宽度统一设置为15个字符
-   - 提高了IR文件的可读性和美观性
+2. **四元式格式优化**
+   - 采用固定宽度列对齐格式
+   - 各字段宽度统一为15个字符，提高可读性
 
-## 命令行参数
 
-编译器支持以下命令行参数：
-- `-i`：生成中间代码（.ir文件）和语法树（.ast文件）
-- `-t`：打印抽象语法树
-- `-a`：打印汇编代码
-- `-d`：调试模式，打印所有信息
+## 编译测试流程
 
-## 编译和运行测试程序
-
-构建完成后，可以在build目录中使用example/Makefile编译和运行测试程序：
-
-```bash
-cd build
-# 编译并运行单个测试程序
-make swap  # 编译并运行swap.c
-
-```
-
-每个测试程序的编译过程包括：
+编译单个测试程序的过程：
 1. 使用parser将C代码转换为汇编代码
-2. 使用nasm汇编器将汇编代码转换为目标文件
-3. 使用gcc链接生成可执行文件
+2. 使用nasm将汇编代码转换为目标文件
+3. 生成最终的可执行文件
 
 ## 注意事项
 
-1. 该编译器实现了C语言的一个子集，支持基本的数据类型、控制结构和运算操作
-2. 构建顺序非常重要，必须先执行`make grammar`，然后执行`make`，最后执行`make build`
-3. 在MacOS上运行时，确保已通过Homebrew安装了所有必要的依赖工具
-4. 测试程序需要通过io目录下的汇编I/O文件来实现输入输出功能
+1. 本编译器实现了C语言的一个子集，支持基本数据类型和控制结构
+2. 构建顺序：必须先执行`make grammar`，然后`make`，最后`make build`
+3. macOS环境需通过Homebrew安装所有依赖
+4. 测试程序通过专用汇编I/O模块实现输入输出功能

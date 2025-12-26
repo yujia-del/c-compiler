@@ -1,4 +1,4 @@
-int main()
+int main()//这是一条注释
 {
     int a = 2;
     int *p;
@@ -14,5 +14,7 @@ int main()
     {
         array[i] = i;
     }
-    print_int(a);
+    /*
+    这是多行注释
+    */
 }

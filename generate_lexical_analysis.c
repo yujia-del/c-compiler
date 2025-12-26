@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <regex.h>
+//#include <regex.h>
 #include <sys/stat.h>
 #include <unistd.h>
 

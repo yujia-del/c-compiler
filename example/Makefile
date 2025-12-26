@@ -2,7 +2,7 @@ CC = gcc
 NASM = nasm
 PROGRAM = ./parser
 
-all: swap loop fibo struct array larra
+all: swap loop fibo struct array larra error
 
 swap: test/swap.c
 	$(PROGRAM) test/swap.c
@@ -33,3 +33,8 @@ larra: test/larra.c
 	$(PROGRAM) test/larra.c
 	$(NASM) -f elf test/larra.asm -o larra.o
 	$(CC) -o larra larra.o io/asm_io.o -m32
+
+error: test/error.c
+	$(PROGRAM) test/error.c
+	$(NASM) -f elf test/error.asm -o error.o
+	$(CC) -o error error.o io/asm_io.o -m32

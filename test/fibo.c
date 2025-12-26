@@ -11,5 +11,4 @@ int fibo(int n) {
 
 int main() {
     int d = fibo(5);
-    print_int(d);
 }
